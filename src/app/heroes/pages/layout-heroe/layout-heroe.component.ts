@@ -6,4 +6,10 @@ import { Component } from '@angular/core';
 })
 export class LayoutHeroeComponent {
 
+
+  public sidebarItems =[
+    {label:'Listado', icon:'label', url: './list'},
+    {label:'Añadir', icon:'add', url: './new-hero'},
+    {label:'Buscar', icon:'search-hero', url: './search-hero'},
+  ]
 }
