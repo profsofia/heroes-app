@@ -3,8 +3,10 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Hero, Publisher } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/hero.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-new-page',
@@ -33,7 +35,8 @@ constructor(
   private heroService: HeroesService,
   private activatedRoute : ActivatedRoute,
   private router : Router,
-  private snackBar : MatSnackBar
+  private snackBar : MatSnackBar,
+  private dialogMaterial : MatDialog
   ){}
 
 
@@ -77,6 +80,36 @@ onSubmit(): void{
       this.router.navigate([`/heroes/edit/${hero.id}`])
     });
 
+}
+
+showConfirmDeleteHero(){
+  const dialogRef = this.dialogMaterial.open(ConfirmDialogComponent, {
+    data: this.formHeroes.value
+  });
+
+  dialogRef.afterClosed()
+  .pipe(
+    //filter lo que hace es filtrar el undifined, solo deja pasar los resultados booleanos
+    filter((result : boolean) =>result),
+    switchMap(()=>this.heroService.deleteById(this.currentHero.id)),
+    filter((wasDeleted: boolean) => wasDeleted),
+  )
+  .subscribe(() =>{
+    this.router.navigate(['/heroes']);
+  })
+  /*.subscribe(result => {
+    console.log({result});
+    if(!result) return;
+    //borra el heroe
+    this.heroService.deleteById(this.currentHero.id).subscribe(
+      wasDeleted =>{
+        if(wasDeleted){
+          this.router.navigate(['/heroes']);
+        }
+      }
+    )
+
+  });*/
 }
 showSnackbar(message: string): void{
   this.snackBar.open(message, 'done', {duration: 2500});
