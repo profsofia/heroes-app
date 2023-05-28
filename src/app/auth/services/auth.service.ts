@@ -26,12 +26,12 @@ export class AuthService {
     )
   }
 
-  checkAuthentication(): Observable<boolean> | boolean{
+  checkAuthentication(): Observable<boolean>{
     /**
      * Si el token es nulo regresamos falso, para decir que el usuario no se encuentra autenticado
      */
    if(!localStorage.getItem('token')){
-    return false;
+    return of(false);
    }
    const token = localStorage.getItem('token');
    return this.http.get<User>(`${this.baseUrl}/users/1`)
